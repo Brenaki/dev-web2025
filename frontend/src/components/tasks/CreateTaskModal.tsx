@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTask } from '../../contexts/TaskContext';
+import { useTask } from '../../contexts/useTask';
 import type { CreateTaskDto } from '../../types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/Card';
 import Button from '../ui/Button';
@@ -39,8 +39,9 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       await createTask(taskData);
       setTitle('');
       onClose();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao criar tarefa');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      setError(error.response?.data?.message || 'Erro ao criar tarefa');
     } finally {
       setIsLoading(false);
     }

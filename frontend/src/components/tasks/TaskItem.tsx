@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTask } from '../../contexts/TaskContext';
+import { useTask } from '../../contexts/useTask';
 import type { Task } from '../../types';
 import { Card, CardContent } from '../ui/Card';
 import Button from '../ui/Button';

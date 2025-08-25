@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTask } from '../../contexts/TaskContext';
+import { useAuth } from '../../contexts/useAuth';
+import { useTask } from '../../contexts/useTask';
 import { Card, CardContent } from '../ui/Card';
 import Button from '../ui/Button';
 import TaskItem from './TaskItem';
