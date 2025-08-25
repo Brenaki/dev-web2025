@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useTask } from '../contexts/TaskContext';
+import { useTask } from '../contexts/useTask';
 
 export const useTaskStats = () => {
   const { tasks, stats, isLoading, error, isSyncing, lastSync } = useTask();
