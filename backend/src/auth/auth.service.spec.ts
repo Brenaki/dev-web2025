@@ -126,9 +126,9 @@ describe('AuthService', () => {
       });
       expect(result.access_token).toBe(mockToken);
       expect(result.user).toEqual({
-        id: mockUser.usr_id,
-        email: mockUser.usr_email,
-        username: mockUser.usr_username,
+        usr_id: mockUser.usr_id,
+        usr_email: mockUser.usr_email,
+        usr_username: mockUser.usr_username,
       });
     });
   });
@@ -136,7 +136,7 @@ describe('AuthService', () => {
   describe('verifyToken', () => {
     it('should verify token correctly', async () => {
       const token = 'valid-token';
-      const payload = { sub: 1, email: 'test@example.com' };
+      const payload = { sub: 1, usr_email: 'test@example.com' };
 
       jest.spyOn(jwtService, 'verify').mockReturnValue(payload);
 
