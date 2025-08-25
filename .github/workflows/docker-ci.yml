@@ -1,0 +1,50 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-backend:
+    name: Build Backend Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build the Backend Docker image
+      run: |
+        cd backend
+        docker build . --file Dockerfile --tag taskmanager-backend:$(date +%s)
+        
+    - name: Build the Frontend Docker image
+      run: |
+        cd frontend
+        docker build . --file Dockerfile --tag taskmanager-frontend:$(date +%s)
+
+  test-and-validate:
+    name: Test and Validate
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.15.0'
+        cache: 'npm'
+        
+    - name: Test Backend
+      run: |
+        cd backend
+        npm ci
+        npm test
+        
+    - name: Test Frontend
+      run: |
+        cd frontend
+        npm ci
+        npm test
