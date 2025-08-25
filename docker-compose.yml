@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL="file:./dev.db"
+      - JWT_SECRET=DAESC2025
+    volumes:
+      - ./backend:/app
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 4173:4173
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
