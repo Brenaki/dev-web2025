@@ -1,35 +1,15 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { User } from '../types';
 import { authService } from '../services/api';
 import { StorageService } from '../services/storage.service';
-
-interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, username: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  isAuthenticated: boolean;
-  sessionInfo: ReturnType<typeof StorageService.getSessionInfo>;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+import { AuthContext, type AuthContextType } from './AuthContextDef';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthContextType['user']>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sessionInfo, setSessionInfo] = useState(StorageService.getSessionInfo());
 
@@ -48,13 +28,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               const userData = await authService.getProfile();
               StorageService.saveUser(userData, StorageService.getToken()!);
               setUser(userData);
-            } catch (error) {
-              console.warn('Falha ao renovar sessão, mantendo dados locais');
+            } catch {
+              // Falha ao renovar sessão, mantendo dados locais
             }
           }
         }
-      } catch (error) {
-        console.error('Erro na inicialização da autenticação:', error);
+      } catch (_error) {
+        console.error('Erro na inicialização da autenticação:', _error);
         StorageService.clearUser();
       } finally {
         setIsLoading(false);
@@ -74,30 +54,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    try {
-      const response = await authService.login({ email, password });
-      StorageService.saveUser(response.user, response.access_token);
-      setUser(response.user);
-      setSessionInfo(StorageService.getSessionInfo());
-    } catch (error) {
-      throw error;
-    }
+    const response = await authService.login({ email, password });
+    StorageService.saveUser(response.user, response.access_token);
+    setUser(response.user);
+    setSessionInfo(StorageService.getSessionInfo());
   };
 
   const register = async (email: string, username: string, password: string) => {
-    try {
-      await authService.register({ usr_email: email, usr_username: username, usr_password: password });
-      await login(email, password);
-    } catch (error) {
-      throw error;
-    }
+    await authService.register({ usr_email: email, usr_username: username, usr_password: password });
+    await login(email, password);
   };
 
   const logout = async () => {
     try {
       await authService.logout();
-    } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+    } catch (_error) {
+      console.error('Erro ao fazer logout:', _error);
     } finally {
       StorageService.clearUser();
       setUser(null);

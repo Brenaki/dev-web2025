@@ -1,41 +1,9 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import type { Task } from '../types';
+import type { Task, CreateTaskDto, UpdateTaskDto } from '../types';
 import { taskService } from '../services/api';
 import { SYNC_CONFIG } from '../config/sync.config';
-
-interface TaskStats {
-  total: number;
-  completed: number;
-  pending: number;
-  completionRate: number;
-  monthlyChange: number;
-}
-
-interface TaskContextType {
-  tasks: Task[];
-  stats: TaskStats;
-  isLoading: boolean;
-  error: string | null;
-  isSyncing: boolean;
-  lastSync: Date | null;
-  loadTasks: () => Promise<void>;
-  createTask: (taskData: any) => Promise<Task>;
-  updateTask: (id: number, taskData: any) => Promise<Task>;
-  deleteTask: (id: number) => Promise<void>;
-  refreshStats: () => void;
-  manualSync: () => Promise<void>;
-}
-
-const TaskContext = createContext<TaskContextType | undefined>(undefined);
-
-export const useTask = () => {
-  const context = useContext(TaskContext);
-  if (context === undefined) {
-    throw new Error('useTask must be used within a TaskProvider');
-  }
-  return context;
-};
+import { TaskContext, type TaskContextType, type TaskStats } from './TaskContextDef';
 
 interface TaskProviderProps {
   children: ReactNode;
@@ -94,10 +62,11 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({ children }) => {
       
       // Atualizar timestamp da última sincronização
       setLastSync(new Date());
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { name?: string };
       console.error(`Erro ao carregar tarefas (tentativa ${retryCount + 1}):`, error);
       
-      if (retryCount < SYNC_CONFIG.MAX_SYNC_RETRIES && error.name !== 'AbortError') {
+      if (retryCount < SYNC_CONFIG.MAX_SYNC_RETRIES && err.name !== 'AbortError') {
         // Tentar novamente após um delay
         setTimeout(() => {
           loadTasksWithRetry(retryCount + 1);
@@ -123,7 +92,7 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({ children }) => {
   }, [loadTasksWithRetry]);
 
   // Função para criar tarefa
-  const createTask = useCallback(async (taskData: any) => {
+  const createTask = useCallback(async (taskData: CreateTaskDto) => {
     try {
       const newTask = await taskService.createTask(taskData);
       setTasks(prev => [newTask, ...prev]);
@@ -140,7 +109,7 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({ children }) => {
   }, [tasks, calculateStats]);
 
   // Função para atualizar tarefa
-  const updateTask = useCallback(async (id: number, taskData: any) => {
+  const updateTask = useCallback(async (id: number, taskData: UpdateTaskDto) => {
     try {
       const updatedTask = await taskService.updateTask(id, taskData);
       setTasks(prev => prev.map(task => 
