@@ -1,12 +1,13 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import type { User } from '../types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 // Função para criar uma hash simples dos dados do usuário
-export function createUserHash(userData: any): string {
+export function createUserHash(userData: User): string {
   const userString = JSON.stringify(userData);
   let hash = 0;
   
@@ -22,7 +23,7 @@ export function createUserHash(userData: any): string {
 }
 
 // Função para verificar se os dados do usuário foram modificados
-export function verifyUserDataIntegrity(userData: any, storedHash: string): boolean {
+export function verifyUserDataIntegrity(userData: User, storedHash: string): boolean {
   const currentHash = createUserHash(userData);
   return currentHash === storedHash;
 }
