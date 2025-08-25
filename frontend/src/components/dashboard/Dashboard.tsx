@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTask } from '../../contexts/TaskContext';
+import { useAuth } from '../../contexts/useAuth';
+import { useTask } from '../../contexts/useTask';
 import { useTaskStats } from '../../hooks/useTaskStats';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { CheckSquare, Clock, TrendingUp, RefreshCw } from 'lucide-react';
