@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  usr_id       Int     @id @default(autoincrement())
+  usr_email    String  @unique
+  usr_username String
+  usr_password String
+  tasks        Tasks[]
+}
+
+model Tasks {
+  tks_id         Int      @id @default(autoincrement())
+  tks_title      String
+  tks_done       Boolean  @default(false)
+  tks_user       Users    @relation(fields: [tks_fk_user], references: [usr_id])
+  tks_fk_user    Int
+  tks_created_at DateTime @default(now())
+  tks_updated_at DateTime @updatedAt
+}
