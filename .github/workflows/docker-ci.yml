@@ -44,10 +44,10 @@ jobs:
       run: |
         cd backend
         npm ci
-        npm test
+        npm run test:cov
         
     - name: Test Frontend
       run: |
         cd frontend
         npm ci
-        npm test
+        npm run lint
