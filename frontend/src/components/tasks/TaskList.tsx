@@ -46,7 +46,15 @@ const TaskList: React.FC = () => {
         </Card>
       ) : (
         <div className="space-y-4">
-          {tasks.map((task) => (
+          {[...tasks]
+            .sort((a, b) => {
+              const order = { URGENT: 4, HIGH: 3, MEDIUM: 2, LOW: 1 } as const;
+              if (order[b.tks_priority] !== order[a.tks_priority]) {
+                return order[b.tks_priority] - order[a.tks_priority];
+              }
+              return new Date(b.tks_created_at).getTime() - new Date(a.tks_created_at).getTime();
+            })
+            .map((task) => (
             <TaskItem
               key={task.tks_id}
               task={task}

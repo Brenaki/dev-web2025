@@ -173,7 +173,14 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({ children }) => {
   }, [tasks, calculateStats]);
 
   const value: TaskContextType = {
-    tasks,
+    tasks: [...tasks].sort((a, b) => {
+      // Prioridade: URGENT > HIGH > MEDIUM > LOW, depois data de criação desc
+      const order: Record<string, number> = { URGENT: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
+      if (order[b.tks_priority] !== order[a.tks_priority]) {
+        return order[b.tks_priority] - order[a.tks_priority];
+      }
+      return new Date(b.tks_created_at).getTime() - new Date(a.tks_created_at).getTime();
+    }),
     stats,
     isLoading,
     error,

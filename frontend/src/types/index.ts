@@ -6,10 +6,21 @@ export interface User {
   usr_updated_at: Date | null;
 }
 
+export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
+export interface Subtask {
+  stb_id: number;
+  stb_title: string;
+  stb_done: boolean;
+  stb_fk_task?: number;
+}
+
 export interface Task {
   tks_id: number;
   tks_title: string;
   tks_done: boolean;
+  tks_priority: Priority;
+  subtasks: Subtask[];
   tks_user: User;
   tks_created_at: Date;
   tks_updated_at: Date | null;
@@ -19,11 +30,15 @@ export interface CreateTaskDto {
   tks_title: string;
   tks_done: boolean;
   tks_fk_user: number;
+  tks_priority?: Priority;
+  subtasks?: { stb_title: string; stb_done?: boolean }[];
 }
 
 export interface UpdateTaskDto {
   tks_title?: string;
   tks_done?: boolean;
+  tks_priority?: Priority;
+  subtasks?: { stb_title: string; stb_done?: boolean }[];
 }
 
 export interface CreateUserDto {
