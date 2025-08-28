@@ -16,12 +16,31 @@ model Users {
   tasks        Tasks[]
 }
 
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 model Tasks {
   tks_id         Int      @id @default(autoincrement())
   tks_title      String
   tks_done       Boolean  @default(false)
   tks_user       Users    @relation(fields: [tks_fk_user], references: [usr_id])
   tks_fk_user    Int
+  tks_priority   Priority @default(MEDIUM)
+  subtasks       Subtasks[]
   tks_created_at DateTime @default(now())
   tks_updated_at DateTime @updatedAt
+}
+
+model Subtasks {
+  stb_id         Int      @id @default(autoincrement())
+  stb_title      String
+  stb_done       Boolean  @default(false)
+  stb_task       Tasks    @relation(fields: [stb_fk_task], references: [tks_id], onDelete: Cascade)
+  stb_fk_task    Int
+  stb_created_at DateTime @default(now())
+  stb_updated_at DateTime @updatedAt
 }

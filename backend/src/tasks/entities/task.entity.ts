@@ -5,6 +5,8 @@ export class Task {
     tks_title: string;
     tks_done: boolean;
     tks_user: User;
+    tks_priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+    subtasks: { stb_id: number; stb_title: string; stb_done: boolean }[];
     tks_created_at: Date;
     tks_updated_at: Date | null;
 }
